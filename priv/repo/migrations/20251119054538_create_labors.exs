@@ -4,10 +4,10 @@ defmodule Histomaterialism.Repo.Migrations.CreateLabors do
   def change do
     create(table(:labors)) do
       add :profession_id, references(:professions), null: false
-      add :job_id, references(:jobs), null: false
+      add :methodology_id, references(:methodologies), null: false
       add :amount, :integer, default: 1, null: false
     end
-    create(index(:labors, [:profession_id, :job_id]))
-    create(index(:labors, [:job_id]))
+    create(index(:labors, [:profession_id, :methodology_id]))
+    create(index(:labors, [:methodology_id]))
   end
 end
