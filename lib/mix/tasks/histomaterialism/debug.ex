@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Histomaterialism.Debug do
           Histomaterialism.Work.Factory,
           preload: [
             methodologies: [
-              labors: [:profession],
+              workers: [:profession],
               outputs: [:good],
               inputs: [:good]
             ]
@@ -22,21 +22,29 @@ defmodule Mix.Tasks.Histomaterialism.Debug do
         )
       )
 
-    for factory <- factories do
-      title = factory.name
-      headers = ["Methodology", "Inputs", "Outputs", "Labors"]
+    headers = ["Name", "Type", "Methodology", "Inputs", "Outputs", "Workers"]
 
+    for factory <- factories do
       factory.methodologies
       |> Enum.map(fn methodology ->
         [
+          factory.name,
+          factory.category,
           methodology.name,
-          Enum.map_join(methodology.inputs, " + ", fn x -> "#{x.amount} #{x.good.name}" end),
-          Enum.map_join(methodology.outputs, " + ", fn x -> "#{x.amount} #{x.good.name}" end),
-          Enum.map_join(methodology.labors, " + ", fn y -> "#{y.amount} #{y.profession.name}" end)
+          Enum.map_join(methodology.inputs, " + ", fn input ->
+            "#{input.amount} #{input.good.name}"
+          end),
+          Enum.map_join(methodology.outputs, " + ", fn output ->
+            "#{output.amount} #{output.good.name}"
+          end),
+          Enum.map_join(methodology.workers, " + ", fn worker ->
+            "#{worker.amount} #{worker.profession.name}"
+          end)
         ]
       end)
-      |> TableRex.quick_render!(headers, title)
-      |> IO.puts()
     end
+    |> Enum.concat()
+    |> TableRex.quick_render!(headers, "Factories")
+    |> IO.puts()
   end
 end

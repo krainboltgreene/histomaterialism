@@ -1,224 +1,191 @@
-_abrahamic =
-  %Histomaterialism.Reason.Religion{
-    name: "Abrahamic"
-  }
-  |> Histomaterialism.Repo.insert!()
+defmodule Seed do
+  def create_religion(name) do
+    %Histomaterialism.Reason.Religion{
+      name: name
+    }
+    |> Histomaterialism.Repo.insert!()
+  end
 
-_islam =
-  %Histomaterialism.Reason.Religion{
-    name: "Islam"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_culture(name) do
+    %Histomaterialism.Reason.Culture{
+      name: name
+    }
+    |> Histomaterialism.Repo.insert!()
+  end
 
-_sufism =
-  %Histomaterialism.Reason.Religion{
-    name: "Sufism"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_good(name, category) do
+    %Histomaterialism.Work.Good{
+      name: name,
+      category: category
+    }
+    |> Histomaterialism.Repo.insert!()
+  end
 
-mahdavism =
-  %Histomaterialism.Reason.Religion{
-    name: "Mahdavism"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_profession(name, literacy) do
+    %Histomaterialism.Work.Profession{
+      name: name,
+      literacy: literacy
+    }
+    |> Histomaterialism.Repo.insert!()
+  end
 
-_indo_european =
-  %Histomaterialism.Reason.Culture{
-    name: "Indo-European"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_methodology(name, inputs, outputs, workers) do
+    methodology =
+      %Histomaterialism.Work.Methodology{
+        name: name
+      }
+      |> Histomaterialism.Repo.insert!()
 
-_germanic =
-  %Histomaterialism.Reason.Culture{
-    name: "Germanic"
-  }
-  |> Histomaterialism.Repo.insert!()
+    for {good, amount} <- inputs do
+      %Histomaterialism.Work.Input{
+        methodology_id: methodology.id,
+        good_id: good.id,
+        amount: amount
+      }
+      |> Histomaterialism.Repo.insert!()
+    end
 
-_west =
-  %Histomaterialism.Reason.Culture{
-    name: "West"
-  }
-  |> Histomaterialism.Repo.insert!()
+    for {good, amount} <- outputs do
+      %Histomaterialism.Work.Output{
+        methodology_id: methodology.id,
+        good_id: good.id,
+        amount: amount
+      }
+      |> Histomaterialism.Repo.insert!()
+    end
 
-_anglo_frisian =
-  %Histomaterialism.Reason.Culture{
-    name: "Anglo-Frisian"
-  }
-  |> Histomaterialism.Repo.insert!()
+    for {profession, amount} <- workers do
+      %Histomaterialism.Work.Worker{
+        methodology_id: methodology.id,
+        profession_id: profession.id,
+        amount: amount
+      }
+      |> Histomaterialism.Repo.insert!()
+    end
 
-english =
-  %Histomaterialism.Reason.Culture{
-    name: "English"
-  }
-  |> Histomaterialism.Repo.insert!()
+    methodology
+  end
 
-coal =
-  %Histomaterialism.Work.Good{
-    name: "Coal",
-    category: "industrial"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_factory(name, category, productions) do
+    factory =
+      %Histomaterialism.Work.Factory{
+        name: name,
+        category: category
+      }
+      |> Histomaterialism.Repo.insert!()
 
-iron =
-  %Histomaterialism.Work.Good{
-    name: "Iron",
-    category: "industrial"
-  }
-  |> Histomaterialism.Repo.insert!()
+    for methodology <- productions do
+      %Histomaterialism.Work.Production{
+        methodology_id: methodology.id,
+        factory_id: factory.id
+      }
+      |> Histomaterialism.Repo.insert!()
+    end
 
-wood =
-  %Histomaterialism.Work.Good{
-    name: "Wood",
-    category: "industrial"
-  }
-  |> Histomaterialism.Repo.insert!()
+    factory
+  end
 
-steel =
-  %Histomaterialism.Work.Good{
-    name: "Steel",
-    category: "industrial"
-  }
-  |> Histomaterialism.Repo.insert!()
+  def create_human(wealth, culture, religion, dependents) do
+    human =
+      %Histomaterialism.Life.Human{
+        wealth: wealth,
+        culture_id: culture.id,
+        religion_id: religion.id
+        # work_id: tool_workshop.id,
+        # home_id: home.id
+      }
+      |> Histomaterialism.Repo.insert!()
 
-tool =
-  %Histomaterialism.Work.Good{
-    name: "Tool",
-    category: "industrial"
-  }
-  |> Histomaterialism.Repo.insert!()
+    %Histomaterialism.Life.Dependent{
+      human_id: human.id,
+      amount: dependents
+    }
+    |> Histomaterialism.Repo.insert!()
 
-labourer =
-  %Histomaterialism.Work.Profession{
-    name: "Labourer",
-    literacy: 10
-  }
-  |> Histomaterialism.Repo.insert!()
+    human
+  end
+end
 
-mechanist =
-  %Histomaterialism.Work.Profession{
-    name: "Mechanist",
-    literacy: 60
-  }
-  |> Histomaterialism.Repo.insert!()
+_abrahamic = Seed.create_religion("Abrahamic")
+
+_islam = Seed.create_religion("Islam")
+
+_sufism = Seed.create_religion("Sufism")
+
+mahdavism = Seed.create_religion("Mahdavism")
+
+_indo_european = Seed.create_culture("Indo-European")
+
+_germanic = Seed.create_culture("Germanic")
+
+_west = Seed.create_culture("West")
+
+_anglo_frisian = Seed.create_culture("Anglo-Frisian")
+
+english = Seed.create_culture("English")
+
+coal = Seed.create_good("Coal", "industrial")
+
+iron = Seed.create_good("Iron", "industrial")
+
+wood = Seed.create_good("Wood", "industrial")
+
+steel = Seed.create_good("Steel", "industrial")
+
+tool = Seed.create_good("Tool", "industrial")
+
+sleep = Seed.create_good("Sleep", "personal")
+
+bed = Seed.create_good("Furniture", "residential")
+
+labourer = Seed.create_profession("Labourer", 10)
+
+mechanist = Seed.create_profession("Mechanist", 40)
 
 steel_beam =
-  %Histomaterialism.Work.Methodology{
-    name: "Steel Beam"
-  }
-  |> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Input{
-  methodology_id: steel_beam.id,
-  good_id: iron.id,
-  amount: 10
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Input{
-  methodology_id: steel_beam.id,
-  good_id: coal.id,
-  amount: 5
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Output{
-  methodology_id: steel_beam.id,
-  good_id: steel.id,
-  amount: 1
-}
-|> Histomaterialism.Repo.insert!()
-
-# TODO: Maybe rename to worker?
-%Histomaterialism.Work.Labor{
-  amount: 1000,
-  methodology_id: steel_beam.id,
-  profession_id: labourer.id
-}
-|> Histomaterialism.Repo.insert!()
+  Seed.create_methodology(
+    "Steel Beam",
+    [
+      {iron, 10},
+      {coal, 5}
+    ],
+    [
+      {steel, 1}
+    ],
+    [
+      {labourer, 1000}
+    ]
+  )
 
 steel_tool =
-  %Histomaterialism.Work.Methodology{
-    name: "Steel Tools"
-  }
-  |> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Input{
-  methodology_id: steel_tool.id,
-  good_id: steel.id,
-  amount: 5
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Input{
-  methodology_id: steel_tool.id,
-  good_id: wood.id,
-  amount: 50
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Output{
-  methodology_id: steel_tool.id,
-  good_id: tool.id,
-  amount: 75
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Labor{
-  amount: 500,
-  methodology_id: steel_tool.id,
-  profession_id: labourer.id
-}
-|> Histomaterialism.Repo.insert!()
-
-%Histomaterialism.Work.Labor{
-  amount: 250,
-  methodology_id: steel_tool.id,
-  profession_id: mechanist.id
-}
-|> Histomaterialism.Repo.insert!()
+  Seed.create_methodology(
+    "Steel Tools",
+    [
+      {steel, 5},
+      {wood, 50}
+    ],
+    [
+      {tool, 75}
+    ],
+    [
+      {labourer, 500},
+      {mechanist, 500}
+    ]
+  )
 
 steel_mill =
-  %Histomaterialism.Work.Factory{
-    name: "Steel Mill",
-    category: "urban"
-  }
-  |> Histomaterialism.Repo.insert!()
+  Seed.create_factory("Steel Mill", "urban", [
+    steel_beam
+  ])
 
 tool_workshop =
-  %Histomaterialism.Work.Factory{
-    name: "Tool Workshop",
-    category: "urban"
-  }
-  |> Histomaterialism.Repo.insert!()
+  Seed.create_factory("Tool Workshop", "urban", [
+    steel_tool
+  ])
 
-%Histomaterialism.Work.Production{
-  methodology_id: steel_beam.id,
-  factory_id: steel_mill.id
-}
-|> Histomaterialism.Repo.insert!()
+# mansion = Seed.create_factory("Mansion", "residential", [])
 
-%Histomaterialism.Work.Production{
-  methodology_id: steel_tool.id,
-  factory_id: tool_workshop.id
-}
-|> Histomaterialism.Repo.insert!()
-
-mansion =
-  %Histomaterialism.Work.Factory{
-    name: "Mansion",
-    category: "residential"
-  }
-  |> Histomaterialism.Repo.insert!()
-
-john =
-  %Histomaterialism.Life.Human{
-    wealth: 10000,
-    culture_id: english.id,
-    religion_id: mahdavism.id,
-    # work_id: tool_workshop.id,
-    home_id: mansion.id
-  }
-  |> Histomaterialism.Repo.insert!()
+john = Seed.create_human(10000, english, mahdavism, 4)
 
 _family =
   %Histomaterialism.Life.Dependent{

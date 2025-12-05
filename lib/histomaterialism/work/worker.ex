@@ -1,7 +1,7 @@
-defmodule Histomaterialism.Work.Labor do
+defmodule Histomaterialism.Work.Worker do
   use Histomaterialism.Schema
 
-  schema "labors" do
+  schema "workers" do
     field :amount, :integer, default: 1
     belongs_to :methodology, Histomaterialism.Work.Methodology
     belongs_to :profession, Histomaterialism.Work.Profession
